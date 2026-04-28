@@ -190,17 +190,17 @@ function renderProduccionesTable(prods) {
     const bruto=calcTotalBruto([p]), neto=sumKgNeto([p]), merma=calcTotalMerma([p]), rend=calcRend([p]);
     const enc = allEncargados.find(e=>e.id===p.encargado_id);
     return `<tr>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${(p.produccion_insumos||[]).map(i=>i.mercancias?.nombre||'—').join(', ')||'—'}</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${(p.produccion_resultados||[]).map(r=>r.mercancias?.nombre||'—').join(', ')||'—'}</td>
-      <td>${bruto.toFixed(2)} kg</td>
-      <td>${neto.toFixed(2)} kg</td>
-      <td>${merma.toFixed(2)} kg</td>
-      <td class="${rendClass(rend)}">${rend}%</td>
-      <td>${enc?enc.nombre:'—'}</td>
-      <td>${p.turno}</td>
-      <td>${badgeHTML(p.estado)}</td>
-      <td>${fmtDate(p.fecha)}</td>
-      <td><div class="table-actions">
+      <td data-label="Entrada" class="td-clamp">${(p.produccion_insumos||[]).map(i=>i.mercancias?.nombre||'—').join(', ')||'—'}</td>
+      <td data-label="Salida" class="td-clamp">${(p.produccion_resultados||[]).map(r=>r.mercancias?.nombre||'—').join(', ')||'—'}</td>
+      <td data-label="Kg Bruto">${bruto.toFixed(2)} kg</td>
+      <td data-label="Kg Neto">${neto.toFixed(2)} kg</td>
+      <td data-label="Merma">${merma.toFixed(2)} kg</td>
+      <td data-label="Rend." class="${rendClass(rend)}">${rend}%</td>
+      <td data-label="Encargado">${enc?enc.nombre:'—'}</td>
+      <td data-label="Turno">${p.turno}</td>
+      <td data-label="Estado">${badgeHTML(p.estado)}</td>
+      <td data-label="Fecha">${fmtDate(p.fecha)}</td>
+      <td data-label="Acciones"><div class="table-actions">
         <button class="btn-icon-sm" onclick="openDetailModal('${p.id}')">👁</button>
         <button class="btn-icon-sm" style="color:#e63946" onclick="deleteProd('${p.id}')">🗑</button>
       </div></td>
