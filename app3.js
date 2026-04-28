@@ -80,7 +80,7 @@ async function saveMercancia(e) {
   };
   try {
     if (mercEditId) { await dbUpdateMercancia(mercEditId, data); showToast('Mercancía actualizada.'); }
-    else { await dbCreateMercancia(data); showToast('✅ Mercancía creada.'); }
+    else { await dbCreateMercancia({ ...data, activo: true }); showToast('✅ Mercancía creada.'); }
     allMercancias = await dbGetMercancias(false);
     renderMercanciasTable(allMercancias);
     renderFichasRacion();

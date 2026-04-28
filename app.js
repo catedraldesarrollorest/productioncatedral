@@ -101,7 +101,6 @@ function setUserBadge() {
 
 // ===== NAVIGATION =====
 function navigateTo(page) {
-  if (event && event.preventDefault) event.preventDefault();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const pg = document.getElementById('page-' + page);
@@ -117,7 +116,6 @@ function navigateTo(page) {
   if (page==='encargados')   renderEncargadosTable(allEncargados);
   if (page==='reportes')     renderReportes();
   if (window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open');
-  return false;
 }
 
 function toggleSidebar() {

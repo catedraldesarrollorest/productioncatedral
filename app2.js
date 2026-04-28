@@ -198,7 +198,7 @@ function renderProduccionesTable(prods) {
   filteredProd = prods;
   const tbody=document.getElementById('prod-table-body');
   setText('prod-count', prods.length+' registro'+(prods.length!==1?'s':''));
-  if (!prods.length){ tbody.innerHTML='<tr><td colspan="10" class="empty-cell">Sin producciones aún.</td></tr>'; return; }
+  if (!prods.length){ tbody.innerHTML='<tr><td colspan="11" class="empty-cell">Sin producciones aún.</td></tr>'; return; }
   tbody.innerHTML=prods.map(p=>{
     const bruto=calcTotalBruto([p]), neto=sumKgNeto([p]), merma=calcTotalMerma([p]), rend=calcRend([p]);
     const enc = allEncargados.find(e=>e.id===p.encargado_id);
