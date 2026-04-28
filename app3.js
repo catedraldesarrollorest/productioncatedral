@@ -6,15 +6,15 @@ function renderMercanciasTable(mercs) {
   setText('merc-count', mercs.length + ' mercancías');
   if (!mercs.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-cell">Sin mercancías. Crea la primera.</td></tr>'; return; }
   tbody.innerHTML = mercs.map(m => `<tr style="${!m.activo?'opacity:0.45':''}">
-    <td><strong>${m.nombre}</strong></td>
-    <td>${CATEGORIA_EMOJI[m.categoria]||''} ${m.categoria}</td>
-    <td>${m.unidad_medida}</td>
-    <td>${(m.unidad_medida==='Rac'||m.unidad_medida==='Porcion') ? `<strong>${m.peso_racion_kg} kg</strong>` : '—'}</td>
-    <td>${m.precio_kg>0?'$'+parseFloat(m.precio_kg).toFixed(2):'—'}</td>
-    <td>${m.es_insumo?'✅':'—'}</td>
-    <td>${m.es_resultado?'✅':'—'}</td>
-    <td>${m.activo?'<span class="badge badge-aprobado">Activa</span>':'<span class="badge badge-obs">Inactiva</span>'}</td>
-    <td><div class="table-actions">
+    <td data-label="Nombre"><strong>${m.nombre}</strong></td>
+    <td data-label="Categoría">${CATEGORIA_EMOJI[m.categoria]||''} ${m.categoria}</td>
+    <td data-label="Unidad">${m.unidad_medida}</td>
+    <td data-label="Peso Rac.">${(m.unidad_medida==='Rac'||m.unidad_medida==='Porcion') ? `<strong>${m.peso_racion_kg} kg</strong>` : '—'}</td>
+    <td data-label="Precio/kg">${m.precio_kg>0?'$'+parseFloat(m.precio_kg).toFixed(2):'—'}</td>
+    <td data-label="Insumo">${m.es_insumo?'✅':'—'}</td>
+    <td data-label="Resultado">${m.es_resultado?'✅':'—'}</td>
+    <td data-label="Estado">${m.activo?'<span class="badge badge-aprobado">Activa</span>':'<span class="badge badge-obs">Inactiva</span>'}</td>
+    <td data-label="Acciones"><div class="table-actions">
       <button class="btn-icon-sm" onclick="openMercanciaModal('${m.id}')">✏️</button>
       <button class="btn-icon-sm" onclick="toggleMerc('${m.id}',${!m.activo})">${m.activo?'🚫':'✅'}</button>
       <button class="btn-icon-sm" style="color:#e63946" onclick="deleteMerc('${m.id}')">🗑</button>
@@ -223,11 +223,11 @@ function renderEncargadosTable(encs) {
   setText('enc-count', encs.length+' encargados');
   if (!encs.length){ tbody.innerHTML='<tr><td colspan="5" class="empty-cell">Sin encargados. Crea el primero.</td></tr>'; return; }
   tbody.innerHTML = encs.map(e=>`<tr style="${!e.activo?'opacity:0.45':''}">
-    <td><strong>${e.nombre}</strong></td>
-    <td>${e.cargo||'—'}</td>
-    <td>${e.activo?'<span class="badge badge-aprobado">Activo</span>':'<span class="badge badge-obs">Inactivo</span>'}</td>
-    <td>${fmtDate(e.created_at)}</td>
-    <td><div class="table-actions">
+    <td data-label="Nombre"><strong>${e.nombre}</strong></td>
+    <td data-label="Cargo">${e.cargo||'—'}</td>
+    <td data-label="Estado">${e.activo?'<span class="badge badge-aprobado">Activo</span>':'<span class="badge badge-obs">Inactivo</span>'}</td>
+    <td data-label="Creado">${fmtDate(e.created_at)}</td>
+    <td data-label="Acciones"><div class="table-actions">
       <button class="btn-icon-sm" onclick="openEncModal('${e.id}')">✏️</button>
       <button class="btn-icon-sm" onclick="toggleEnc('${e.id}',${!e.activo})">${e.activo?'🚫':'✅'}</button>
       <button class="btn-icon-sm" style="color:#e63946" onclick="deleteEnc('${e.id}')">🗑</button>
