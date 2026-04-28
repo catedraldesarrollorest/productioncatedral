@@ -64,17 +64,6 @@ function renderResultados() {
   empty && (empty.style.display='none');
   const mList = allMercancias.filter(m => m.activo && m.es_resultado);
   tbody.innerHTML = resultadoRows.map((row, i) => {
-    const merc = allMercancias.find(m => m.id === row.mercancia_id);
-    const usaRacion = merc && (merc.unidad_medida==='Rac' || merc.unidad_medida==='Porcion');
-    const totalBruto = insumoRows.reduce((s,r) => s+(parseFloat(r.peso_bruto_kg)||0), 0);
-    const neto = parseFloat(row.peso_neto_kg)||0;
-    
-    // User requested: Esperado and Merma calculated against Total Bruto
-    const esperado = totalBruto; 
-    const merma = totalBruto > 0 ? (totalBruto - neto) : 0;
-    const rend = totalBruto > 0 ? (neto/totalBruto*100).toFixed(1) : '—';
-    const rendC = rend!=='—' ? rendClass(rend) : '';
-
     return `<tr>
       <td>
         <select class="row-input row-select" style="min-width:180px"
@@ -86,10 +75,7 @@ function renderResultados() {
       <td><input type="number" class="row-input" style="width:90px" step="1" min="0" placeholder="0"
           value="${row.porciones}" onchange="updatePorciones(${i}, this.value)"/></td>
       <td><input type="number" class="row-input" style="width:110px" step="0.001" min="0" placeholder="0.000"
-          value="${row.peso_neto_kg}" onchange="resultadoRows[${i}].peso_neto_kg=parseFloat(this.value)||0;updateTotals();renderResultados()"/></td>
-      <td class="calc-cell">${esperado > 0 ? esperado.toFixed(3)+' kg' : '<span style="color:#5a5a70">—</span>'}</td>
-      <td class="calc-cell ${merma>0?'calc-bad':merma<0?'calc-good':''}">${esperado > 0 ? merma.toFixed(3)+' kg' : '—'}</td>
-      <td class="calc-cell ${rendC}">${rend}%</td>
+          value="${row.peso_neto_kg}" onchange="resultadoRows[${i}].peso_neto_kg=parseFloat(this.value)||0;updateTotals()"/></td>
       <td><button type="button" class="btn-icon-sm" style="color:#e63946" onclick="removeResultado(${i})">✕</button></td>
     </tr>`;
   }).join('');
@@ -157,19 +143,20 @@ async function submitProduction(e) {
 
   const insumos = validInsumos.map(r=>({ mercancia_id:r.mercancia_id, peso_bruto_kg:parseFloat(r.peso_bruto_kg) }));
 
+  const totalNeto = validResultados.reduce((s,r)=>s+(parseFloat(r.peso_neto_kg)||0), 0);
+  const globalMerma = Math.max(0, totalBruto - totalNeto);
+
   const resultados = validResultados.map(r=>{
-    const m=allMercancias.find(x=>x.id===r.mercancia_id);
-    const usaRacion=m&&(m.unidad_medida==='Rac'||m.unidad_medida==='Porcion');
     const neto = parseFloat(r.peso_neto_kg)||0;
-    const esperado = totalBruto;
+    const proporcion = totalNeto > 0 ? neto / totalNeto : 0;
     return {
       mercancia_id: r.mercancia_id,
       porciones: r.porciones||0,
       peso_neto_kg: neto,
-      peso_esperado_kg: esperado,
-      merma_kg: esperado > 0 ? Math.max(0, esperado - neto) : 0,
+      peso_esperado_kg: totalBruto,
+      merma_kg: globalMerma * proporcion,
       rendimiento_pct: totalBruto > 0 ? (neto/totalBruto*100) : 0,
-      variacion_racion_pct: esperado > 0 ? (neto/esperado*100) : 0
+      variacion_racion_pct: totalBruto > 0 ? (neto/totalBruto*100) : 0
     };
   });
 
@@ -270,7 +257,7 @@ function openDetailModal(id) {
     <div class="detail-section-title">Productos de Entrada</div>
     ${(p.produccion_insumos||[]).map(i=>`<div style="padding:4px 0;font-size:13px;color:#9090a8">${i.mercancias?.nombre||'?'} — <b style="color:#f0f0f5">${parseFloat(i.peso_bruto_kg).toFixed(3)} kg</b></div>`).join('')||'<span style="color:#5a5a70">—</span>'}
     <div class="detail-section-title">Materiales de Producción</div>
-    ${(p.produccion_resultados||[]).map(r=>`<div style="padding:4px 0;font-size:13px;color:#9090a8">${r.mercancias?.nombre||'?'} — <b style="color:#f0f0f5">${r.porciones} porciones / ${parseFloat(r.peso_neto_kg).toFixed(3)} kg</b> | Merma: ${parseFloat(r.merma_kg||0).toFixed(3)} kg | Rend: <span class="${rendClass(r.rendimiento_pct)}">${parseFloat(r.rendimiento_pct||0).toFixed(1)}%</span></div>`).join('')||'<span style="color:#5a5a70">—</span>'}
+    ${(p.produccion_resultados||[]).map(r=>`<div style="padding:4px 0;font-size:13px;color:#9090a8">${r.mercancias?.nombre||'?'} — <b style="color:#f0f0f5">${r.porciones} porciones / ${parseFloat(r.peso_neto_kg).toFixed(3)} kg</b></div>`).join('')||'<span style="color:#5a5a70">—</span>'}
     ${p.observaciones?`<div class="detail-section-title">Observaciones</div><p style="font-size:13px;color:#9090a8">${p.observaciones}</p>`:''}`;
   document.getElementById('detail-delete-btn').onclick=()=>{deleteProd(id);closeDetailModal();};
   document.getElementById('modal-detail').classList.add('open');

@@ -170,7 +170,7 @@ function calcTotalBruto(prods) {
   return prods.reduce((s,p)=>s+(p.produccion_insumos||[]).reduce((a,i)=>a+parseFloat(i.peso_bruto_kg||0),0),0);
 }
 function calcTotalMerma(prods) {
-  return prods.reduce((s,p)=>s+(p.produccion_resultados||[]).reduce((a,r)=>a+parseFloat(r.merma_kg||0),0),0);
+  return calcTotalBruto(prods) - sumKgNeto(prods);
 }
 function calcRend(prods) {
   const n=sumKgNeto(prods), b=calcTotalBruto(prods);

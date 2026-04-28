@@ -276,19 +276,16 @@
               <div class="table-container">
                 <table class="inner-table" id="resultados-table">
                   <thead><tr>
-                    <th>Mercancía</th><th>Porciones</th><th>Peso Neto (kg)</th>
-                    <th>Esperado</th><th>Merma</th><th>Rend.</th><th></th>
+                    <th>Mercancía</th><th>Porciones</th><th>Peso Neto (kg)</th><th></th>
                   </tr></thead>
                   <tbody id="resultados-body">
-                    <tr id="resultados-empty"><td colspan="7" class="empty-cell">Agrega al menos un material de producción.</td></tr>
+                    <tr id="resultados-empty"><td colspan="4" class="empty-cell">Agrega al menos un material de producción.</td></tr>
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td class="tfoot-label" colspan="2">Total peso neto</td>
+                      <td class="tfoot-label">Total neto</td>
                       <td class="tfoot-value" id="total-neto">0.000 kg</td>
-                      <td class="tfoot-label">Total esperado</td>
-                      <td class="tfoot-label" id="total-merma">0.000 kg</td>
-                      <td class="tfoot-value rend-pct" id="total-rend">—%</td>
+                      <td class="tfoot-label">Merma <span id="total-merma" class="tfoot-value" style="margin-left:4px">0.000 kg</span> &nbsp;|&nbsp; Rend. <span id="total-rend" class="tfoot-value rend-pct" style="margin-left:4px">—%</span></td>
                       <td></td>
                     </tr>
                   </tfoot>
