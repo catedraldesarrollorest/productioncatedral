@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CarnePro — Control de Producción</title>
+  <meta name="description" content="Sistema de registro y revisión de producciones de carnicería para restaurantes."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login-screen" class="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-container">
+    <div class="login-logo">
+      <span class="login-emoji">🥩</span>
+      <h1 class="login-brand">CarnePro</h1>
+      <p class="login-tagline">Control de Producción de Carnicería</p>
+    </div>
+
+    <!-- Step 1: elegir rol -->
+    <div id="login-step-rol" class="login-card">
+      <p class="login-label">Selecciona tu área</p>
+      <div class="role-grid">
+        <button class="role-btn" id="btn-rol-Carniceria" onclick="selectRol('Carniceria')">
+          <span class="role-emoji">🔪</span>
+          <span class="role-name">Carnicería</span>
+        </button>
+        <button class="role-btn" id="btn-rol-Contabilidad" onclick="selectRol('Contabilidad')">
+          <span class="role-emoji">📊</span>
+          <span class="role-name">Contabilidad</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: PIN -->
+    <div id="login-step-pin" class="login-card hidden">
+      <button class="back-btn" onclick="backToRol()">← Volver</button>
+      <p class="login-label" id="pin-label">Ingresa tu PIN</p>
+      <div class="pin-dots" id="pin-dots">
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
+      <div class="pin-error hidden" id="pin-error">PIN incorrecto. Intenta de nuevo.</div>
+      <div class="numpad">
+        <button class="num-btn" onclick="pinPress('1')">1</button>
+        <button class="num-btn" onclick="pinPress('2')">2</button>
+        <button class="num-btn" onclick="pinPress('3')">3</button>
+        <button class="num-btn" onclick="pinPress('4')">4</button>
+        <button class="num-btn" onclick="pinPress('5')">5</button>
+        <button class="num-btn" onclick="pinPress('6')">6</button>
+        <button class="num-btn" onclick="pinPress('7')">7</button>
+        <button class="num-btn" onclick="pinPress('8')">8</button>
+        <button class="num-btn" onclick="pinPress('9')">9</button>
+        <button class="num-btn num-clear" onclick="pinClear()">C</button>
+        <button class="num-btn" onclick="pinPress('0')">0</button>
+        <button class="num-btn num-del" onclick="pinDel()">⌫</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" class="app hidden">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🥩</div>
+      <div class="logo-text">
+        <span class="logo-name">CarnePro</span>
+        <span class="logo-sub">Producción</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- Se llena dinámicamente según el rol -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="user-avatar">—</div>
+        <div class="user-info">
+          <span class="user-name" id="user-name">—</span>
+          <span class="user-role" id="user-role">—</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Cerrar sesión">⏏</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="page-title" id="page-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbar-date"></div>
+        <div class="status-badge" id="conn-badge">
+          <span class="status-dot"></span> Conectando...
+        </div>
+      </div>
+    </header>
+
+    <!-- ── DASHBOARD ── -->
+    <section class="page" id="page-dashboard">
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-red">
+          <div class="kpi-icon">🥩</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-kg-hoy">— kg</div>
+            <div class="kpi-label">Producción Hoy</div>
+            <div class="kpi-trend" id="kpi-lotes-hoy">— lotes</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-amber">
+          <div class="kpi-icon">⏳</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-activos">—</div>
+            <div class="kpi-label">En Proceso</div>
+            <div class="kpi-trend">Lotes activos</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-green">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-aprobados">—</div>
+            <div class="kpi-label">Aprobados QC</div>
+            <div class="kpi-trend" id="kpi-aprobados-pct">Del total</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-kg-semana">— kg</div>
+            <div class="kpi-label">Esta Semana</div>
+            <div class="kpi-trend" id="kpi-lotes-semana">— lotes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2 class="card-title">Producción Diaria (7 días)</h2>
+            <div class="card-actions">
+              <button class="btn-ghost active" onclick="setChartView('semana',this)">Semana</button>
+              <button class="btn-ghost" onclick="setChartView('mes',this)">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container"><canvas id="productionChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Por Categoría</h2></div>
+          <div class="category-list" id="category-list"><div class="empty-state-small">Sin datos</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Últimas Producciones</h2>
+          <button class="btn-outline" onclick="navigateTo('producciones')">Ver todas →</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th>Insumos</th><th>Materiales Producción</th>
+              <th>Kg Neto</th><th>Merma</th><th>Rend.</th>
+              <th>Turno</th><th>Estado</th><th>Fecha</th>
+            </tr></thead>
+            <tbody id="dash-recent-body">
+              <tr><td colspan="8" class="empty-cell">Sin registros aún.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── REGISTRAR ── -->
+    <section class="page" id="page-registrar">
+      <div class="form-wrapper">
+        <div class="form-hero">
+          <h1 class="form-title">Nueva Producción</h1>
+          <p class="form-subtitle">Registra los productos de entrada y los materiales obtenidos en el turno.</p>
+        </div>
+
+        <form id="production-form" onsubmit="submitProduction(event)">
+          <!-- Info general -->
+          <div class="card form-section">
+            <div class="card-header"><h2 class="card-title">📋 Información General</h2></div>
+            <div class="form-body">
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label class="form-label">Fecha y Hora *</label>
+                  <input type="datetime-local" id="prod-fecha" class="form-input" required/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Turno *</label>
+                  <select id="prod-turno" class="form-input">
+                    <option value="Mañana">🌅 Mañana (6–14h)</option>
+                    <option value="Tarde">🌤️ Tarde (14–22h)</option>
+                    <option value="Noche">🌙 Noche (22–6h)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Encargado *</label>
+                  <select id="prod-encargado" class="form-input" required>
+                    <option value="">— Seleccionar encargado —</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Estado</label>
+                  <select id="prod-estado" class="form-input">
+                    <option value="En proceso">🔄 En proceso</option>
+                    <option value="Listo">✅ Listo</option>
+                    <option value="Aprobado">⭐ Aprobado QC</option>
+                    <option value="Observación">⚠️ Observación</option>
+                    <option value="Rechazado">❌ Rechazado</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Observaciones</label>
+                <textarea id="prod-observaciones" class="form-input form-textarea" placeholder="Notas del turno..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Productos (Insumos) -->
+          <div class="card form-section">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">🐄 Productos (Entradas)</h2>
+                <p class="card-subtitle">Carne y materias primas que entran al proceso</p>
+              </div>
+              <button type="button" class="btn-outline" onclick="addInsumoRow()">+ Agregar</button>
+            </div>
+            <div class="form-body">
+              <div class="table-container">
+                <table class="inner-table" id="insumos-table">
+                  <thead><tr>
+                    <th>Mercancía</th><th>Peso Bruto (kg)</th><th></th>
+                  </tr></thead>
+                  <tbody id="insumos-body">
+                    <tr id="insumos-empty"><td colspan="3" class="empty-cell">Agrega al menos un producto de entrada.</td></tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td class="tfoot-label">Total peso bruto</td>
+                      <td class="tfoot-value" id="total-bruto">0.000 kg</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Materiales de Producción (Resultados) -->
+          <div class="card form-section">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">🔪 Materiales de Producción (Salidas)</h2>
+                <p class="card-subtitle">Raciones y cortes obtenidos del proceso</p>
+              </div>
+              <button type="button" class="btn-outline" onclick="addResultadoRow()">+ Agregar</button>
+            </div>
+            <div class="form-body">
+              <div class="table-container">
+                <table class="inner-table" id="resultados-table">
+                  <thead><tr>
+                    <th>Mercancía</th><th>Porciones</th><th>Peso Neto (kg)</th>
+                    <th>Esperado</th><th>Merma</th><th>Rend.</th><th></th>
+                  </tr></thead>
+                  <tbody id="resultados-body">
+                    <tr id="resultados-empty"><td colspan="7" class="empty-cell">Agrega al menos un material de producción.</td></tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td class="tfoot-label" colspan="2">Total peso neto</td>
+                      <td class="tfoot-value" id="total-neto">0.000 kg</td>
+                      <td class="tfoot-label">Total esperado</td>
+                      <td class="tfoot-label" id="total-merma">0.000 kg</td>
+                      <td class="tfoot-value rend-pct" id="total-rend">—%</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="resetProductionForm()">Limpiar</button>
+            <button type="submit" class="btn-primary" id="submit-btn">
+              <span id="submit-label">Registrar Producción</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── PRODUCCIONES ── -->
+    <section class="page" id="page-producciones">
+      <div class="page-header">
+        <h1 class="section-title">Historial de Producciones</h1>
+        <div class="header-actions">
+          <button class="btn-primary" onclick="navigateTo('registrar')">+ Nueva</button>
+          <button class="btn-ghost" onclick="exportCSV()">⬇ CSV</button>
+        </div>
+      </div>
+      <div class="filters-bar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-prod" class="search-input" placeholder="Buscar por mercancía, estado..." oninput="applyFilters()"/>
+        </div>
+        <select class="filter-select" id="f-estado" onchange="applyFilters()">
+          <option value="">Todos los estados</option>
+          <option>En proceso</option><option>Listo</option>
+          <option>Aprobado</option><option>Observación</option><option>Rechazado</option>
+        </select>
+        <select class="filter-select" id="f-turno" onchange="applyFilters()">
+          <option value="">Todos los turnos</option>
+          <option>Mañana</option><option>Tarde</option><option>Noche</option>
+        </select>
+        <input type="date" class="filter-select" id="f-desde" onchange="applyFilters()" placeholder="Desde"/>
+        <input type="date" class="filter-select" id="f-hasta" onchange="applyFilters()" placeholder="Hasta"/>
+      </div>
+      <div class="card">
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th>Productos (Entrada)</th>
+              <th>Materiales (Salida)</th>
+              <th>Kg Bruto</th><th>Kg Neto</th>
+              <th>Merma</th><th>Rend.</th>
+              <th>Turno</th><th>Estado</th><th>Fecha</th><th>Acciones</th>
+            </tr></thead>
+            <tbody id="prod-table-body">
+              <tr><td colspan="10" class="empty-cell">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span id="prod-count">0 registros</span></div>
+      </div>
+    </section>
+
+    <!-- ── MERCANCÍAS (Admin) ── -->
+    <section class="page" id="page-mercancias">
+      <div class="page-header">
+        <h1 class="section-title">Gestión de Mercancías</h1>
+        <div class="header-actions">
+          <button class="btn-secondary" onclick="openImportModal()">⬆ Importar Excel</button>
+          <button class="btn-primary" onclick="openMercanciaModal()">+ Nueva Mercancía</button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search-merc" class="search-input" placeholder="Buscar mercancía..." oninput="filterMercancias()"/>
+        </div>
+        <select class="filter-select" id="f-cat-merc" onchange="filterMercancias()">
+          <option value="">Todas las categorías</option>
+          <option>Vacuno</option><option>Cerdo</option><option>Pollo</option>
+          <option>Cordero</option><option>Embutidos</option><option>Otro</option>
+        </select>
+        <select class="filter-select" id="f-activo-merc" onchange="filterMercancias()">
+          <option value="">Activas e inactivas</option>
+          <option value="true">Solo activas</option>
+          <option value="false">Solo inactivas</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th>Nombre</th><th>Categoría</th><th>Unidad</th>
+              <th>Peso Ración (kg)</th><th>Precio/kg</th>
+              <th>Insumo</th><th>Resultado</th><th>Estado</th><th>Acciones</th>
+            </tr></thead>
+            <tbody id="merc-table-body">
+              <tr><td colspan="9" class="empty-cell">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span id="merc-count">0 mercancías</span></div>
+      </div>
+
+      <!-- Fichas de Ración -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📐 Fichas de Ración (Rac / Porcion)</h2>
+            <p class="card-subtitle">Actualiza el peso por ración para futuros cambios de ficha</p>
+          </div>
+        </div>
+        <div id="fichas-racion-list" style="padding:8px 0"><div class="empty-state-small">Sin mercancías de tipo Rac/Porcion activas.</div></div>
+      </div>
+    </section>
+
+    <!-- ── ENCARGADOS (Admin) ── -->
+    <section class="page" id="page-encargados">
+      <div class="page-header">
+        <h1 class="section-title">Encargados</h1>
+        <button class="btn-primary" onclick="openEncModal()">+ Nuevo Encargado</button>
+      </div>
+      <div class="card">
+        <div class="table-container">
+          <table class="data-table">
+            <thead><tr>
+              <th>Nombre</th><th>Cargo / Área</th><th>Estado</th><th>Creado</th><th>Acciones</th>
+            </tr></thead>
+            <tbody id="enc-table-body">
+              <tr><td colspan="5" class="empty-cell">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span id="enc-count">0 encargados</span></div>
+      </div>
+    </section>
+
+    <!-- ── REPORTES ── -->
+    <section class="page" id="page-reportes">
+      <div class="page-header">
+        <h1 class="section-title">Reportes y Análisis</h1>
+        <button class="btn-outline" onclick="exportCSV()">⬇ Exportar CSV</button>
+      </div>
+      <div class="reports-grid">
+        <div class="card report-card">
+          <div class="card-header"><h2 class="card-title">Rendimiento por Mercancía</h2></div>
+          <div id="rep-rendimiento" class="report-list"><div class="empty-state-small">Sin datos</div></div>
+        </div>
+        <div class="card report-card">
+          <div class="card-header"><h2 class="card-title">Merma por Categoría</h2></div>
+          <div id="rep-merma" class="report-list"><div class="empty-state-small">Sin datos</div></div>
+        </div>
+        <div class="card report-card">
+          <div class="card-header"><h2 class="card-title">Producción por Turno</h2></div>
+          <div id="rep-turno" class="report-list"><div class="empty-state-small">Sin datos</div></div>
+        </div>
+        <div class="card report-card">
+          <div class="card-header"><h2 class="card-title">Estados de Calidad</h2></div>
+          <div id="rep-estados" class="report-list"><div class="empty-state-small">Sin datos</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== MODAL: Mercancía ===================== -->
+<div class="modal-overlay" id="modal-mercancia" onclick="closeMercanciaModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-merc-title">Nueva Mercancía</h3>
+      <button class="modal-close" onclick="closeMercanciaModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-mercancia" onsubmit="saveMercancia(event)">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Nombre *</label>
+            <input type="text" id="merc-nombre" class="form-input" required placeholder="ej. Pechuga entera"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoría *</label>
+            <select id="merc-categoria" class="form-input" required>
+              <option value="">— Seleccionar —</option>
+              <option>Vacuno</option><option>Cerdo</option><option>Pollo</option>
+              <option>Cordero</option><option>Embutidos</option><option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unidad de Medida *</label>
+            <select id="merc-unidad" class="form-input" onchange="togglePesoRacionField()">
+              <option value="kg">kg — Kilogramos</option>
+              <option value="U">U — Unidades</option>
+              <option value="Rac">Rac — Raciones</option>
+              <option value="Porcion">Porcion — Porciones</option>
+            </select>
+          </div>
+          <div class="form-group" id="peso-racion-row" style="display:none">
+            <label class="form-label">Peso por Ración (kg) *</label>
+            <input type="number" id="merc-peso-racion" class="form-input" step="0.001" min="0.001" placeholder="ej. 0.200"/>
+            <span style="font-size:11px;color:#9090a8">Ejemplo: 1 Rac = 0.200 kg</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Precio por kg ($)</label>
+            <input type="number" id="merc-precio" class="form-input" step="0.01" min="0" placeholder="0.00"/>
+          </div>
+          <div class="form-group" style="display:flex;flex-direction:column;gap:10px;justify-content:center;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="merc-es-insumo" checked/> Es Insumo (entrada)
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="merc-es-resultado" checked/> Es Material de Producción (salida)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer" style="padding:0;border:none;margin-top:16px;">
+          <button type="button" class="btn-secondary" onclick="closeMercanciaModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Mercancía</button>
+        </div>
+        <input type="hidden" id="merc-edit-id"/>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: Importar Excel ===================== -->
+<div class="modal-overlay" id="modal-import" onclick="closeImportModal()">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Importar Mercancías desde Excel</h3>
+      <button class="modal-close" onclick="closeImportModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-template">
+        <p class="import-info">El archivo Excel debe tener las siguientes columnas en la primera hoja:</p>
+        <div class="template-cols">
+          <code>nombre</code><code>categoria</code><code>unidad_medida</code>
+          <code>peso_racion_kg</code><code>precio_kg</code><code>es_insumo</code><code>es_resultado</code>
+        </div>
+        <button class="btn-ghost" onclick="downloadTemplate()">⬇ Descargar plantilla</button>
+      </div>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('excel-file').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <span class="drop-icon">📂</span>
+        <p>Arrastra tu archivo Excel aquí o haz clic para seleccionar</p>
+        <p class="drop-sub">.xlsx / .xls</p>
+        <input type="file" id="excel-file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelFile(event)"/>
+      </div>
+      <div id="import-preview" class="hidden">
+        <div class="preview-header">
+          <span id="preview-count"></span>
+          <button class="btn-danger-sm" onclick="clearImport()">✕ Cancelar</button>
+        </div>
+        <div class="table-container" style="max-height:200px;overflow-y:auto">
+          <table class="data-table"><thead id="preview-thead"></thead><tbody id="preview-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeImportModal()">Cancelar</button>
+      <button class="btn-primary" id="btn-confirm-import" disabled onclick="confirmImport()">Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: Detalle Producción ===================== -->
+<div class="modal-overlay" id="modal-detail" onclick="closeDetailModal()">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Detalle de Producción</h3>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeDetailModal()">Cerrar</button>
+      <button class="btn-danger" id="detail-delete-btn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Encargado -->
+<div class="modal-overlay" id="modal-encargado" onclick="closeEncModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-enc-title">Nuevo Encargado</h3>
+      <button class="modal-close" onclick="closeEncModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="form-encargado" onsubmit="saveEncargado(event)">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Nombre completo *</label>
+            <input type="text" id="enc-nombre" class="form-input" required placeholder="ej. Carlos Méndez"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo / Área</label>
+            <input type="text" id="enc-cargo" class="form-input" placeholder="ej. Carnicero Jefe"/>
+          </div>
+        </div>
+        <div class="modal-footer" style="padding:0;border:none;margin-top:16px;">
+          <button type="button" class="btn-secondary" onclick="closeEncModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Encargado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="config.js"></script>
+<script src="db.js"></script>
+<script src="app.js"></script>
+<script src="app2.js"></script>
+<script src="app3.js"></script>
+</body>
+</html>
