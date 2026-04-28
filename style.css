@@ -258,6 +258,17 @@ select.form-input{cursor:pointer}
 .empty-icon{font-size:46px;margin-bottom:14px}
 .empty-state p{margin-bottom:18px;font-size:14px}
 
+/* ─── SIDEBAR OVERLAY — backdrop táctil en móvil ─── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.55);z-index:99;
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+}
+.sidebar-overlay.visible{display:block}
+
+/* iOS smooth-scroll en contenedores con desbordamiento */
+.table-container,.modal-body,.sidebar-nav{-webkit-overflow-scrolling:touch}
+
 /* ── 1100 px ── */
 @media(max-width:1100px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -272,6 +283,7 @@ select.form-input{cursor:pointer}
   .dashboard-grid{grid-template-columns:1fr}
   .reports-grid{grid-template-columns:1fr}
   .page{padding:20px 20px 60px}
+  .form-body{padding:16px}
 }
 
 /* ── 768 px — móvil ── */
@@ -279,44 +291,82 @@ select.form-input{cursor:pointer}
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.open{transform:translateX(0)}
   .main-content{margin-left:0}
-  .page{padding:14px 12px 56px}
+  .page{padding:14px 12px 72px}
+  .topbar{padding:0 14px}
+  .topbar-right{gap:8px}
   .form-row-3{grid-template-columns:1fr}
   .form-row-2{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .filters-bar{flex-direction:column;align-items:stretch}
-  .data-table td{white-space:normal;min-width:80px}
+  .filter-select{min-width:unset;width:100%}
+  .search-box{min-width:unset}
+  .data-table td{white-space:normal;min-width:60px}
   .inner-table td{white-space:normal}
-  .page-header{flex-direction:column;align-items:flex-start;gap:12px}
-  .header-actions{width:100%;justify-content:flex-start}
+  .page-header{flex-direction:column;align-items:flex-start;gap:10px}
+  .header-actions{width:100%;flex-wrap:wrap;gap:8px}
+  .card-header{flex-wrap:wrap;gap:8px;padding:12px 16px}
+  .form-body{padding:14px}
   .form-actions{flex-direction:column}
   .form-actions .btn-primary,.form-actions .btn-secondary{width:100%;justify-content:center}
+  .detail-grid{grid-template-columns:1fr}
+  .modal-footer{flex-wrap:wrap;gap:8px}
+  .modal-footer .btn-primary,.modal-footer .btn-secondary,.modal-footer .btn-danger{flex:1;min-width:120px;justify-content:center}
+  .report-item{padding:8px 14px}
+  .report-label{font-size:12px}
+  .report-value{font-size:12px;min-width:50px}
+  .toast{right:12px;left:12px;max-width:unset;bottom:16px}
+  .chart-container{height:180px}
+  .table-actions{gap:4px}
+  .kpi-content{min-width:0}
 }
 
 /* ── 600 px — modales bottom-sheet ── */
 @media(max-width:600px){
   .modal,.modal.modal-wide{
-    width:100%;
-    max-width:100%;
-    border-radius:16px 16px 0 0;
+    width:100%;max-width:100%;
+    border-radius:20px 20px 0 0;
     margin-top:auto;
   }
   .modal-overlay{align-items:flex-end}
-  .modal-body{max-height:60vh}
+  .modal-body{max-height:65vh;padding:16px}
+  .modal-header{padding:14px 16px}
+  .modal-footer{padding:12px 16px;flex-wrap:wrap;gap:8px}
+  .modal-footer .btn-primary,.modal-footer .btn-secondary,.modal-footer .btn-danger{flex:1;min-width:120px;justify-content:center;text-align:center}
   .ficha-row{flex-direction:column;align-items:flex-start}
   .ficha-editor{width:100%;flex-wrap:wrap}
+  .drop-zone{padding:24px 16px}
+  .detail-grid{grid-template-columns:1fr}
 }
 
 /* ── 480 px — teléfono pequeño ── */
 @media(max-width:480px){
   .topbar-date{display:none}
-  .topbar{padding:0 12px}
+  .topbar{padding:0 10px}
   .page-title{font-size:14px}
+  .status-text{display:none}
+  .status-badge{padding:5px 8px}
   .kpi-grid{grid-template-columns:1fr}
   .kpi-card{padding:14px}
   .kpi-value{font-size:20px}
   .section-title{font-size:18px}
-  .login-container{padding:16px}
-  .num-btn{padding:14px;font-size:18px}
+  .login-container{padding:12px;gap:14px}
+  .login-card{padding:20px 14px}
+  .login-emoji{font-size:42px}
+  .login-brand{font-size:26px}
+  .num-btn{padding:13px;font-size:17px}
+  .role-btn{padding:18px 10px}
+  .role-emoji{font-size:28px}
+  .form-title{font-size:20px}
+  .form-subtitle{font-size:13px}
+  .chart-container{height:160px}
+  .page{padding:10px 10px 72px}
+  .card-header{padding:10px 12px}
+  .form-body{padding:10px}
+  .table-footer{padding:8px 12px}
+  .card-title{font-size:13px}
+  .filters-bar{gap:8px}
+  .kpi-trend{font-size:11px}
+  .nav-item{padding:10px 12px;font-size:13px}
 }
 
 /* FICHAS DE RACIÓN */

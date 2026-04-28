@@ -115,13 +115,23 @@ function navigateTo(page) {
   if (page==='mercancias')   renderMercanciasTable(allMercancias);
   if (page==='encargados')   renderEncargadosTable(allEncargados);
   if (page==='reportes')     renderReportes();
-  if (window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open');
+  if (window.innerWidth<=768) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('visible');
+  }
 }
 
 function toggleSidebar() {
-  const sb=document.getElementById('sidebar'), mc=document.getElementById('main-content');
-  if (window.innerWidth<=768) sb.classList.toggle('open');
-  else { sb.classList.toggle('collapsed'); mc.classList.toggle('expanded'); }
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const mc=document.getElementById('main-content');
+  if (window.innerWidth<=768) {
+    sb.classList.toggle('open');
+    ov.classList.toggle('visible');
+  } else {
+    sb.classList.toggle('collapsed');
+    mc.classList.toggle('expanded');
+  }
 }
 
 // ===== LOAD DATA =====
@@ -143,7 +153,7 @@ async function loadAllData() {
 function setBadge(type, text) {
   const el=document.getElementById('conn-badge');
   el.className='status-badge '+type;
-  el.innerHTML=`<span class="status-dot"></span> ${text}`;
+  el.innerHTML=`<span class="status-dot"></span><span class="status-text"> ${text}</span>`;
 }
 
 // ===== DASHBOARD =====
