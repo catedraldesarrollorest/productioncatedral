@@ -269,6 +269,11 @@ select.form-input{cursor:pointer}
 /* iOS smooth-scroll en contenedores con desbordamiento */
 .table-container,.modal-body,.sidebar-nav{-webkit-overflow-scrolling:touch}
 
+/* ── col-hide-md: oculta columnas secundarias en laptops estrechas ── */
+@media(min-width:641px) and (max-width:1300px){
+  .col-hide-md{display:none}
+}
+
 /* ── 1100 px ── */
 @media(max-width:1100px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}

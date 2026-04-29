@@ -229,14 +229,14 @@ function setChartView(v,btn) {
 function renderDashRecent() {
   const tbody=document.getElementById('dash-recent-body');
   const recent=allProducciones.slice(0,6);
-  if (!recent.length){tbody.innerHTML='<tr><td colspan="8" class="empty-cell">Sin registros aún.</td></tr>';return;}
+  if (!recent.length){tbody.innerHTML='<tr><td colspan="7" class="empty-cell">Sin registros aún.</td></tr>';return;}
   tbody.innerHTML=recent.map(p=>`<tr>
     <td data-label="Insumos">${(p.produccion_insumos||[]).map(i=>i.mercancias?.nombre||'—').join(', ')||'—'}</td>
     <td data-label="Materiales">${(p.produccion_resultados||[]).map(r=>r.mercancias?.nombre||'—').join(', ')||'—'}</td>
     <td data-label="Kg Neto">${sumKgNeto([p]).toFixed(2)} kg</td>
     <td data-label="Merma">${calcTotalMerma([p]).toFixed(2)} kg</td>
     <td data-label="Rend." class="${rendClass(calcRend([p]))}">${calcRend([p])}%</td>
-    <td data-label="Turno">${p.turno}</td><td data-label="Estado">${badgeHTML(p.estado)}</td><td data-label="Fecha">${fmtDate(p.fecha)}</td>
+    <td data-label="Estado">${badgeHTML(p.estado)}</td><td data-label="Fecha">${fmtDate(p.fecha)}</td>
   </tr>`).join('');
 }
 

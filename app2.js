@@ -6,7 +6,6 @@ function initRegistrarForm() {
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   document.getElementById('prod-fecha').value = now.toISOString().slice(0,16);
   document.getElementById('prod-observaciones').value = '';
-  document.getElementById('prod-estado').value = 'En proceso';
   populateEncargadoSelect();
   insumoRows = []; resultadoRows = [];
   renderInsumos(); renderResultados();
@@ -132,12 +131,15 @@ async function submitProduction(e) {
   const btn = document.getElementById('submit-btn');
   btn.disabled=true; document.getElementById('submit-label').textContent='Guardando...';
 
+  const fecha = document.getElementById('prod-fecha').value;
+  const h = new Date(fecha).getHours();
+  const turno = h >= 6 && h < 14 ? 'Mañana' : h >= 14 && h < 22 ? 'Tarde' : 'Noche';
   const produccion = {
-    fecha: document.getElementById('prod-fecha').value,
-    turno: document.getElementById('prod-turno').value,
+    fecha,
+    turno,
     rol_usuario: session.rol,
     encargado_id: encargadoId,
-    estado: document.getElementById('prod-estado').value,
+    estado: 'Listo',
     observaciones: document.getElementById('prod-observaciones').value
   };
 
@@ -185,7 +187,7 @@ function renderProduccionesTable(prods) {
   filteredProd = prods;
   const tbody=document.getElementById('prod-table-body');
   setText('prod-count', prods.length+' registro'+(prods.length!==1?'s':''));
-  if (!prods.length){ tbody.innerHTML='<tr><td colspan="11" class="empty-cell">Sin producciones aún.</td></tr>'; return; }
+  if (!prods.length){ tbody.innerHTML='<tr><td colspan="10" class="empty-cell">Sin producciones aún.</td></tr>'; return; }
   tbody.innerHTML=prods.map(p=>{
     const bruto=calcTotalBruto([p]), neto=sumKgNeto([p]), merma=calcTotalMerma([p]), rend=calcRend([p]);
     const enc = allEncargados.find(e=>e.id===p.encargado_id);
@@ -197,8 +199,7 @@ function renderProduccionesTable(prods) {
       <td data-label="Merma">${merma.toFixed(2)} kg</td>
       <td data-label="Rend." class="${rendClass(rend)}">${rend}%</td>
       <td data-label="Encargado">${enc?enc.nombre:'—'}</td>
-      <td data-label="Turno">${p.turno}</td>
-      <td data-label="Estado">${badgeHTML(p.estado)}</td>
+      <td data-label="Estado" class="col-hide-md">${badgeHTML(p.estado)}</td>
       <td data-label="Fecha">${fmtDate(p.fecha)}</td>
       <td data-label="Acciones"><div class="table-actions">
         <button class="btn-icon-sm" onclick="openDetailModal('${p.id}')">👁</button>

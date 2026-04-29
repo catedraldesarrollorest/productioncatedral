@@ -174,10 +174,10 @@
             <thead><tr>
               <th>Insumos</th><th>Materiales Producción</th>
               <th>Kg Neto</th><th>Merma</th><th>Rend.</th>
-              <th>Turno</th><th>Estado</th><th>Fecha</th>
+              <th>Estado</th><th>Fecha</th>
             </tr></thead>
             <tbody id="dash-recent-body">
-              <tr><td colspan="8" class="empty-cell">Sin registros aún.</td></tr>
+              <tr><td colspan="7" class="empty-cell">Sin registros aún.</td></tr>
             </tbody>
           </table>
         </div>
@@ -197,33 +197,15 @@
           <div class="card form-section">
             <div class="card-header"><h2 class="card-title">📋 Información General</h2></div>
             <div class="form-body">
-              <div class="form-row-3">
+              <div class="form-row-2">
                 <div class="form-group">
                   <label class="form-label">Fecha y Hora *</label>
                   <input type="datetime-local" id="prod-fecha" class="form-input" required/>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Turno *</label>
-                  <select id="prod-turno" class="form-input">
-                    <option value="Mañana">🌅 Mañana (6–14h)</option>
-                    <option value="Tarde">🌤️ Tarde (14–22h)</option>
-                    <option value="Noche">🌙 Noche (22–6h)</option>
-                  </select>
-                </div>
-                <div class="form-group">
                   <label class="form-label">Encargado *</label>
                   <select id="prod-encargado" class="form-input" required>
                     <option value="">— Seleccionar encargado —</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Estado</label>
-                  <select id="prod-estado" class="form-input">
-                    <option value="En proceso">🔄 En proceso</option>
-                    <option value="Listo">✅ Listo</option>
-                    <option value="Aprobado">⭐ Aprobado QC</option>
-                    <option value="Observación">⚠️ Observación</option>
-                    <option value="Rechazado">❌ Rechazado</option>
                   </select>
                 </div>
               </div>
@@ -341,7 +323,7 @@
               <th>Kg Bruto</th><th>Kg Neto</th>
               <th>Merma</th><th>Rend.</th>
               <th>Encargado</th>
-              <th>Turno</th><th>Estado</th><th>Fecha</th><th>Acciones</th>
+              <th class="col-hide-md">Estado</th><th>Fecha</th><th>Acciones</th>
             </tr></thead>
             <tbody id="prod-table-body">
               <tr><td colspan="10" class="empty-cell">Cargando...</td></tr>
