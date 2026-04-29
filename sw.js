@@ -1,4 +1,4 @@
-const CACHE = 'carnepro-v1';
+const CACHE = 'carnepro-v2';
 const ASSETS = [
   '/',
   '/index.html',
