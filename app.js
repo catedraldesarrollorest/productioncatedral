@@ -12,6 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
   updateClock(); setInterval(updateClock, 1000);
 });
 
+document.addEventListener('keydown', (e) => {
+  const pinStep = document.getElementById('login-step-pin');
+  if (!pinStep || pinStep.classList.contains('hidden')) return;
+  
+  if (e.key >= '0' && e.key <= '9') {
+    pinPress(e.key);
+  } else if (e.key === 'Backspace') {
+    pinDel();
+  } else if (e.key === 'Escape') {
+    pinClear();
+  }
+});
+
 function updateClock() {
   const el = document.getElementById('topbar-date');
   if (el) el.textContent = new Date().toLocaleString('es-ES', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
