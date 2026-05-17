@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "SDP — Control de Producción",
   "short_name": "SDP",
   "description": "Sistema de registro y revisión de producciones de carnicería",
@@ -21,7 +22,13 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
